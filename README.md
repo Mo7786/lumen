@@ -27,6 +27,6 @@ Full Shopify steps: [`docs/SETUP.md`](docs/SETUP.md)
 
 ## Shopify copy-paste photos
 
-Edited product JPEGs for the live store are in [`shopify-copy-paste/`](shopify-copy-paste/). Download [`shopify-copy-paste/lumen-copy-paste.zip`](shopify-copy-paste/lumen-copy-paste.zip) and follow the paste steps in that folder’s README.
+Yesterday’s edited product JPEGs (all catalog slides except how-tos / 7-colour charts) are in [`shopify-copy-paste/`](shopify-copy-paste/). Download [`shopify-copy-paste/lumen-copy-paste.zip`](shopify-copy-paste/lumen-copy-paste.zip) and follow the paste steps in that folder’s README.
 
 This GitHub repo stores **files**, not the Cursor chat. Reopen the same Cloud Agent at [cursor.com/agents](https://cursor.com/agents) with the same Cursor account.

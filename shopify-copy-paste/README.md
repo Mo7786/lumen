@@ -4,7 +4,7 @@ This folder is the handover for the product-photo work. Cursor chats do **not** 
 
 **Repo:** https://github.com/Mo7786/lumen  
 **Live store:** https://9b5bbe-hg.myshopify.com/  
-**Download zip:** [lumen-copy-paste.zip](lumen-copy-paste.zip) (53 JPEGs, no how-to slides)
+**Download zip:** [lumen-copy-paste.zip](lumen-copy-paste.zip) (55 JPEGs, yesterday’s edited product slides, no how-to slides)
 
 ## Open this on another device
 
@@ -33,9 +33,9 @@ Clean Shopify-style names. How-to files were left out on purpose.
 
 | Shopify handle | Upload these (in order) | Leave original |
 | --- | --- | --- |
-| `tool-roller` | *not in this pack* | all current shots |
+| `tool-roller` | `tool-roller.jpg`, `-2`, `-3`, `-4` | — |
 | `tool-mirror` | `tool-mirror.jpg`, `tool-mirror-2.jpg` | — |
-| `tool-neck-led` | `tool-neck-led.jpg`, `-2`, `-3` | last how-to; slide 2 (7-colour chart) |
+| `tool-neck-led` | `tool-neck-led.jpg`, `tool-neck-led-2.jpg` | last how-to **and** the 7-colour chart (`tool-neck-led-3`) |
 | `tool-pads` | `tool-pads.jpg` | — |
 | `tool-brow` | `tool-brow.jpg`, `tool-brow-2.jpg` | last how-to |
 | `tool-lash` | `tool-lash.jpg`, `tool-lash-2.jpg` | — |
@@ -51,7 +51,7 @@ Clean Shopify-style names. How-to files were left out on purpose.
 | `tool-ice-roller` | `tool-ice-roller.jpg` … `-6` | last how-to |
 | `tool-ice-globes` | `tool-ice-globes.jpg`, `-2` | last how-to |
 | `tool-brush` | `tool-brush.jpg`, `-2`, `tool-brush-5.jpg` | last how-to |
-| `tool-led` | `tool-led.jpg`, `-2`, `-3` | last how-to; 7-colour chart |
+| `tool-led` | `tool-led.jpg`, `tool-led-2.jpg` | last how-to **and** the 7-colour chart (`tool-led-3`) |
 | `tool-gua` | `tool-gua.jpg`, `-2`, `-3` | last how-to |
 
 `tool-brush-5.jpg` matches the live third product-shot filename. Keep that name when uploading.
@@ -66,7 +66,10 @@ Clean Shopify-style names. How-to files were left out on purpose.
 - `tool-scalp-comb` is the **Electric LED Scalp Massager** (elongated oval LED wand). Do not redesign it as a 3-comb set.
 - Gua sha screen: white digit **9** only. No MODE / SPEED text.
 - Sponges: **exactly 12**.
-- Latest request for curls + ice roller: **no floor / contact shadow**. This pack may still have older shadows on some of those slides; Cloud Agent artifact storage dropped the later no-shadow reshoot.
+- Curls + ice roller: **no floor / contact shadow**.
+- Ice globes hero: hearts **out of the tray**.
+- Neck wand hero: white body, keep the red LED.
+- LED mask product shots: no leftover LUMEN UI text boxes.
 
 ## Not in GitHub
 
