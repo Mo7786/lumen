@@ -20,13 +20,24 @@
       : '<div class="product-visual"></div>';
   }
 
+  function gallery(product) {
+    return window.LUMEN_PHOTOS && window.LUMEN_PHOTOS.gallery
+      ? window.LUMEN_PHOTOS.gallery(product, "pdp__visual")
+      : visual(product, "pdp__visual");
+  }
+
+  function closest(node, sel) {
+    while (node && node.nodeType !== 1) node = node.parentNode;
+    return node && node.closest ? node.closest(sel) : null;
+  }
+
   function productCard(product) {
     var href = "product.html?id=" + product.id;
     var badge = product.badge
       ? '<span class="product-card__badge">' + product.badge + "</span>"
       : "";
     return (
-      '<article class="product-card reveal">' +
+      '<article class="product-card reveal is-visible">' +
       '<a class="product-card__media" href="' +
       href +
       '" aria-label="' +
@@ -149,12 +160,14 @@
       if (state.category !== "all") p.set("category", state.category);
       if (state.query) p.set("q", state.query);
       var qs = p.toString();
-      history.replaceState(null, "", qs ? "?" + qs : window.location.pathname);
+      try {
+        history.replaceState(null, "", qs ? "?" + qs : window.location.pathname);
+      } catch (err) {}
     }
 
     if (filtersEl) {
       filtersEl.addEventListener("click", function (e) {
-        var btn = e.target.closest("[data-filter]");
+        var btn = closest(e.target, "[data-filter]");
         if (!btn) return;
         state.category = btn.getAttribute("data-filter");
         draw();
@@ -203,7 +216,7 @@
     mount.innerHTML =
       '<div class="pdp">' +
       '<div class="pdp__media">' +
-      visual(product, "pdp__visual") +
+      gallery(product) +
       "</div>" +
       '<div class="pdp__info reveal is-visible">' +
       '<p class="eyebrow">' +
@@ -268,8 +281,8 @@
   /* ---------- Qty stepper ---------- */
 
   document.addEventListener("click", function (e) {
-    var dec = e.target.closest("[data-qty-dec]");
-    var inc = e.target.closest("[data-qty-inc]");
+    var dec = closest(e.target, "[data-qty-dec]");
+    var inc = closest(e.target, "[data-qty-inc]");
     if (!dec && !inc) return;
     var input = document.querySelector("[data-qty-input]");
     if (!input) return;
@@ -322,17 +335,63 @@
   window.addEventListener("load", function () {
     window.setTimeout(function () {
       var hidden = document.querySelectorAll(".reveal:not(.is-visible)");
-      for (var i = 0; i < hidden.length; i++) {
-        var r = hidden[i].getBoundingClientRect();
-        if (r.top < window.innerHeight) hidden[i].classList.add("is-visible");
-      }
-    }, 600);
+      for (var i = 0; i < hidden.length; i++) hidden[i].classList.add("is-visible");
+    }, 700);
   });
+
+  /* ---------- PDP gallery ---------- */
+
+  function stepGallery(galleryEl, dir) {
+    var slides = galleryEl.querySelectorAll("[data-slide]");
+    if (!slides.length) return;
+    var current = 0;
+    for (var i = 0; i < slides.length; i++) {
+      if (slides[i].classList.contains("is-active")) current = i;
+    }
+    var next = (current + dir + slides.length) % slides.length;
+    for (var j = 0; j < slides.length; j++) {
+      slides[j].classList.toggle("is-active", j === next);
+    }
+    var count = galleryEl.querySelector("[data-gallery-count]");
+    if (count) count.textContent = next + 1 + " / " + slides.length;
+  }
+
+  document.addEventListener("click", function (e) {
+    var prev = closest(e.target, "[data-gallery-prev]");
+    var next = closest(e.target, "[data-gallery-next]");
+    if (!prev && !next) return;
+    var galleryEl = closest(e.target, "[data-gallery]");
+    if (!galleryEl) return;
+    e.preventDefault();
+    stepGallery(galleryEl, next ? 1 : -1);
+  });
+
+  /* ---------- Contact form ---------- */
+
+  function wireContactForm() {
+    var form = document.getElementById("contact-form");
+    if (!form) return;
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var name = (form.elements.name && form.elements.name.value) || "";
+      var email = (form.elements.email && form.elements.email.value) || "";
+      var message = (form.elements.message && form.elements.message.value) || "";
+      var subject = "LUMEN — message from " + (name || "the site");
+      var body =
+        "Name: " + name + "\nEmail: " + email + "\n\n" + message;
+      window.location.href =
+        "mailto:hello@lumenlab.shop?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body);
+    });
+  }
 
   document.addEventListener("DOMContentLoaded", function () {
     renderFeatured();
     renderShop();
     renderProduct();
+    wireContactForm();
     observeReveals(document);
   });
 })();

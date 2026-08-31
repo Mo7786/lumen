@@ -1,12 +1,12 @@
 /*
  * LUMEN product visuals.
- * The catalog ships without bitmap photography, so product imagery is rendered
- * as on-brand gradient panels keyed to each product's accent color. This keeps
- * the repo text-only (no binary assets) and avoids broken <img> requests.
- * Exposed as window.LUMEN_PHOTOS.
+ * Uses the edited JPEGs in shopify-copy-paste/jpegs/, with a gradient
+ * fallback if a file is missing. Exposed as window.LUMEN_PHOTOS.
  */
 (function () {
   "use strict";
+
+  var PHOTO_DIR = "shopify-copy-paste/jpegs/";
 
   function hexToRgb(hex) {
     var h = String(hex || "#5eead4").replace("#", "");
@@ -22,7 +22,6 @@
     return "rgba(" + c.r + "," + c.g + "," + c.b + "," + a + ")";
   }
 
-  // Deterministic background so a product always renders the same panel.
   function background(product) {
     var accent = (product && product.accent) || "#5eead4";
     return (
@@ -45,23 +44,17 @@
       .join("");
   }
 
-  // Fill a placeholder element with the product's visual.
-  function paint(el, product) {
-    if (!el || !product) return;
-    el.style.setProperty("--accent", product.accent || "#5eead4");
-    el.style.background = background(product);
-    el.classList.add("has-visual");
-    if (!el.querySelector(".product-visual__mark")) {
-      var mark = document.createElement("span");
-      mark.className = "product-visual__mark";
-      mark.textContent = initials(product.name);
-      mark.setAttribute("aria-hidden", "true");
-      el.appendChild(mark);
-    }
+  function images(product) {
+    if (product && product.images && product.images.length) return product.images;
+    if (product && product.id) return [product.id + ".jpg"];
+    return [];
   }
 
-  // Return HTML string for a product visual panel (used by cards / detail).
-  function markup(product, extraClass) {
+  function src(file) {
+    return PHOTO_DIR + file;
+  }
+
+  function fallbackMarkup(product, extraClass) {
     var accent = (product && product.accent) || "#5eead4";
     return (
       '<div class="product-visual has-visual ' +
@@ -78,38 +71,95 @@
     );
   }
 
+  function imgTag(product, file) {
+    return (
+      '<img class="product-visual__img" src="' +
+      src(file) +
+      '" alt="' +
+      String(product.name || "LUMEN tool").replace(/"/g, "&quot;") +
+      '" loading="lazy" decoding="async" />'
+    );
+  }
+
+  function markup(product, extraClass) {
+    var files = images(product);
+    if (!files.length) return fallbackMarkup(product, extraClass);
+    return (
+      '<div class="product-visual has-visual has-photo ' +
+      (extraClass || "") +
+      '">' +
+      imgTag(product, files[0]) +
+      "</div>"
+    );
+  }
+
+  function gallery(product, extraClass) {
+    var files = images(product);
+    if (files.length < 2) return markup(product, extraClass || "pdp__visual");
+    var slides = files
+      .map(function (file, i) {
+        return (
+          '<figure class="pdp-slide' +
+          (i === 0 ? " is-active" : "") +
+          '" data-slide="' +
+          i +
+          '">' +
+          imgTag(product, file) +
+          "</figure>"
+        );
+      })
+      .join("");
+    return (
+      '<div class="pdp-gallery product-visual has-visual has-photo ' +
+      (extraClass || "pdp__visual") +
+      '" data-gallery>' +
+      '<div class="pdp-gallery__track">' +
+      slides +
+      "</div>" +
+      '<button class="pdp-gallery__btn pdp-gallery__btn--prev" type="button" data-gallery-prev aria-label="Previous image">\u2039</button>' +
+      '<button class="pdp-gallery__btn pdp-gallery__btn--next" type="button" data-gallery-next aria-label="Next image">\u203a</button>' +
+      '<p class="pdp-gallery__count" data-gallery-count>1 / ' +
+      files.length +
+      "</p>" +
+      "</div>"
+    );
+  }
+
+  function paint(el, product) {
+    if (!el || !product) return;
+    el.outerHTML = markup(product, el.className);
+  }
+
   function hydratePlaceholders(root) {
     var scope = root || document;
     var lookup = window.LUMEN_PRODUCTS;
     if (!lookup) return;
-
-    // Elements that opt in explicitly.
     var nodes = scope.querySelectorAll("[data-photo-id]");
     for (var i = 0; i < nodes.length; i++) {
       var product = lookup.byId(nodes[i].getAttribute("data-photo-id"));
-      if (product) paint(nodes[i], product);
-    }
-
-    // Defensive: replace any legacy product <img> so nothing 404s.
-    var imgs = scope.querySelectorAll('img[src*="images/products/"]');
-    for (var j = 0; j < imgs.length; j++) {
-      var img = imgs[j];
-      var id = (img.getAttribute("src") || "")
-        .replace(/^.*images\/products\//, "")
-        .replace(/\.[a-z0-9]+$/i, "");
-      var p = lookup.byId(id) || { name: img.alt, accent: "#5eead4" };
-      var div = document.createElement("div");
-      div.className = "product-visual has-visual";
-      if (img.parentNode) img.parentNode.replaceChild(div, img);
-      paint(div, p);
+      if (!product) continue;
+      var files = images(product);
+      nodes[i].classList.add("product-visual", "has-visual");
+      if (files.length) {
+        nodes[i].classList.add("has-photo");
+        nodes[i].innerHTML = imgTag(product, files[0]);
+      } else {
+        nodes[i].style.background = background(product);
+        nodes[i].innerHTML =
+          '<span class="product-visual__mark" aria-hidden="true">' +
+          initials(product.name) +
+          "</span>";
+      }
     }
   }
 
   window.LUMEN_PHOTOS = {
     markup: markup,
+    gallery: gallery,
     paint: paint,
     background: background,
-    hydratePlaceholders: hydratePlaceholders
+    hydratePlaceholders: hydratePlaceholders,
+    images: images
   };
 
   document.addEventListener("DOMContentLoaded", function () {

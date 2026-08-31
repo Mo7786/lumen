@@ -255,9 +255,14 @@
     if (totEl) totEl.textContent = money(sub + ship.price);
   }
 
+  function closest(node, sel) {
+    while (node && node.nodeType !== 1) node = node.parentNode;
+    return node && node.closest ? node.closest(sel) : null;
+  }
+
   // Event delegation for all cart interactions.
   document.addEventListener("click", function (e) {
-    var t = e.target.closest("[data-add-to-cart],[data-cart-remove],[data-cart-inc],[data-cart-dec],[data-checkout]");
+    var t = closest(e.target, "[data-add-to-cart],[data-cart-remove],[data-cart-inc],[data-cart-dec],[data-checkout]");
     if (!t) return;
 
     if (t.hasAttribute("data-add-to-cart")) {
